@@ -1,0 +1,39 @@
+model;prompt;response;time
+llama3.2:1b;What is the biggest planet in the solar system?;The biggest planet in our solar system is Jupiter. It is a gas giant and is approximately 142,984 kilometers (88,846 miles) in diameter. That's more than 11 times the diameter of the Earth. Jupiter is also the fifth planet from the Sun and is known for its massive size, storm systems like the Great Red Spot, and a strong magnetic field.;3.735091209411621
+llama3.2:1b;List the eight planets from largest to smallest by diameter.;"Here are the eight planets in our solar system listed from largest to smallest by diameter:
+
+1. Jupiter - approximately 142,984 kilometers (88,846 miles) in diameter
+2. Saturn - approximately 116,464 kilometers (72,337 miles) in diameter
+3. Uranus - approximately 51,118 kilometers (31,763 miles) in diameter
+4. Neptune - approximately 49,528 kilometers (30,777 miles) in diameter
+5. Earth - approximately 12,742 kilometers (7,918 miles) in diameter
+6. Venus - approximately 12,104 kilometers (7,521 miles) in diameter
+7. Mars - approximately 6,794 kilometers (4,220 miles) in diameter
+8. Mercury - approximately 4,879 kilometers (3,031 miles) in diameter";1.4633078575134277
+llama3.2:1b;What is Jupiter’s diameter in km?;Jupiter's diameter is approximately 142,984 kilometers.;0.1619892120361328
+gemma3:1b;What is the biggest planet in the solar system?;"The biggest planet in the solar system is **Jupiter**.
+
+While Earth is often considered the ""habitable"" planet, Jupiter is significantly larger, boasting a diameter about 11 times that of Earth.
+
+Here's a quick comparison:
+
+*   **Jupiter:** 142,984 km (88,846 miles)
+*   **Earth:** 12,756 km (7,926 miles)
+
+It's important to note that even though Jupiter is the largest, it's not the most massive – Saturn is heavier.";3.1307213306427
+gemma3:1b;List the eight planets from largest to smallest by diameter.;"Okay, here are the eight planets from largest to smallest by diameter:
+
+1.  **Jupiter** – Approximately 142,900 km
+2.  **Saturn** – Approximately 120,536 km
+3.  **Uranus** – Approximately 50,703 km
+4.  **Neptune** – Approximately 49,244 km
+5.  **Earth** – Approximately 12,742 km
+6.  **Venus** – Approximately 12,104 km
+7.  **Mars** – Approximately 6,779 km
+8.  **Mercury** – Approximately 4,879 km 
+
+**Note:**  Diameter measurements can vary slightly depending on the source and how they are measured.";1.2711725234985352
+gemma3:1b;What is Jupiter’s diameter in km?;"Jupiter’s diameter is approximately **142,984 km**.
+
+This is a bit of a constantly shifting number as observations and models refine. However, 142,984 km is the most commonly accepted figure as of today.
+";0.4362354278564453
