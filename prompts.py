@@ -6,7 +6,7 @@ if __name__ == '__main__':
                "List the eight planets from largest to smallest by diameter.",
                "What is Jupiter’s diameter in km?"]
 
-    results_csv = "results.csv"
+    results_csv = "results_yasaman_run2.csv"
 
     add_to_csv(results_csv, ["model", "prompt", "response", "time"], new=True)
 
