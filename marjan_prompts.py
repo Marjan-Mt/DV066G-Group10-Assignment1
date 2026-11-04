@@ -22,7 +22,7 @@ reference = (
 
 prompts = [question, question + reference]
 
-with open("results.csv", "w", newline="", encoding="utf-8") as file:
+with open("marjan_results.csv", "w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)
     writer.writerow(["model", "prompt", "answer", "seconds"])
 
@@ -46,4 +46,4 @@ with open("results.csv", "w", newline="", encoding="utf-8") as file:
             print(f"Answer: {answer}")
             print(f"Time: {seconds} seconds")
 
-print("\nSaved to results.csv")
+print("\nSaved to marjan_results.csv")
