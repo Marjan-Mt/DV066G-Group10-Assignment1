@@ -1,0 +1,27 @@
+model;prompt;response;time
+llama3.2:latest;What is the biggest planet in the solar system?;The biggest planet in our solar system is Jupiter. It is a gas giant, meaning that it is primarily composed of hydrogen and helium gases. Jupiter is the fifth planet from the Sun and is the largest of all the planets in terms of both mass and size. It is approximately 1,475 times the mass of Earth and has a diameter of about 142,984 kilometers (88,846 miles).;7.316740989685059
+llama3.2:latest;List the eight planets from largest to smallest by diameter.;"Here are the eight planets in our solar system listed in order from largest to smallest by diameter:
+
+1. Jupiter - diameter of approximately 142,984 kilometers (88,846 miles)
+2. Saturn - diameter of approximately 116,460 kilometers (72,337 miles)
+3. Uranus - diameter of approximately 51,118 kilometers (31,763 miles)
+4. Neptune - diameter of approximately 49,528 kilometers (30,777 miles)
+5. Earth - diameter of approximately 12,742 kilometers (7,918 miles)
+6. Venus - diameter of approximately 12,104 kilometers (7,521 miles)
+7. Mars - diameter of approximately 6,794 kilometers (4,220 miles)
+8. Mercury - diameter of approximately 4,879 kilometers (3,031 miles)";7.197563171386719
+llama3.2:latest;What is Jupiter’s diameter in km?;The diameter of Jupiter is approximately 142,984 kilometers (88,846 miles).;0.9629290103912354
+qwen2.5:1.5b;What is the biggest planet in the solar system?;The biggest planet in the solar system is Jupiter. It has a diameter of approximately 86,881 miles (139,822 kilometers) and is about 11 times the size of Earth. The planet is so large that it would need a sphere with a diameter of nearly 24 miles (39 kilometers) to fit inside of it. This makes Jupiter the largest planet in our solar system.;3.5771210193634033
+qwen2.5:1.5b;List the eight planets from largest to smallest by diameter.;"The eight planets in our solar system, listed from largest to smallest by diameter, are:
+
+1. Jupiter
+2. Saturn
+3. Uranus
+4. Neptune
+5. Earth
+6. Mars
+7. Mercury
+8. Venus
+
+This order is based on the planets' average diameters, with Jupiter being the largest and Venus being the smallest in this sequence.";2.0814740657806396
+qwen2.5:1.5b;What is Jupiter’s diameter in km?;Jupiter's diameter is approximately 142,984 kilometers.;0.4019908905029297
