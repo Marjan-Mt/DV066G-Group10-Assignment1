@@ -8,7 +8,7 @@ Group10_judge.py is the main script to run the tests
 
 ### Observations
 
-#### Karim:
+
 
 The test was initially ran according to this prompt to test the models with a static answer:
 
@@ -49,7 +49,7 @@ However it did seem to reason correctly with the nonsensical land
 >> Judge response: NO. The given answer does not agree with the expected answer, as MachineLand does not exist.
 
 
-Karim ran 3 additional tests for each model and in 3/3 gemma did not show any faults in the answers and the reasoning was sound
+Ran 3 additional tests for each model and in 3/3 gemma did not show any faults in the answers and the reasoning was sound
 >gemma3:1b:
 >>test 1  
 Answer is: The capital of Sweden is Stockholm.  
