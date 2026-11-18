@@ -53,20 +53,20 @@ Ran 3 additional tests for each model and in 3/3 gemma did not show any faults i
 >gemma3:1b:
 >>test 1  
 Expected Answer is: The capital of Sweden is Stockholm.  
-Judge "llama3.2:1b" response: YES. It accurately reflects the expected answer.  
-Judge "llama3.2:1b" response: NO.  
+Judge "gemma3:1b" response: YES. It accurately reflects the expected answer.  
+Judge "gemma3:1b" response: NO.  
 Reasoning: The expected answer explicitly states there’s no country, so “Capacity” isn’t the capital.
 > 
 >>test 2  
 Expected Answer is: The capital of Norway is Oslo.  
-Judge "llama3.2:1b" response: YES. It accurately reflects the expected answer.  
-Judge "llama3.2:1b" response: NO.  
+Judge "gemma3:1b" response: YES. It accurately reflects the expected answer.  
+Judge "gemma3:1b" response: NO.  
 Reasoning: The expected answer explicitly states there is no country, thus there is no capital.
 >
 >>test 3  
 Expected Answer is: The capital of Norway is Oslo.  
-Judge "llama3.2:1b" response: YES. The answer matches the expected answer perfectly.  
-Judge "llama3.2:1b" response: NO. It disagrees with the expected answer, which states there is no capital.  
+Judge "gemma3:1b" response: YES. The answer matches the expected answer perfectly.  
+Judge "gemma3:1b" response: NO. It disagrees with the expected answer, which states there is no capital.  
 
 Llama however failed each of the test when it came to judging the real cities and also gave nonsensical reasoning to 
 answers.
@@ -82,9 +82,9 @@ Judge "llama3.2:1b" response: NO. The given answer does not agree with the expec
 Judge "llama3.2:1b" response: NO. The given answer is incorrect as MachineLand is a fictional country.  
 >
 >>test 3  
-Answer is: The capital of Sweden is Stockholm.  <--- Strict expected answer   
-Judge response: NO  
-Judge response: NO, it does not agree as Capacity is a city, not a country. <- Hallucination
+Expected Answer is: The capital of Sweden is Stockholm.     
+Judge "llama3.2:1b" response: NO  
+Judge "llama3.2:1b" response: NO, it does not agree as Capacity is a city, not a country. <- Hallucination
 
 After establishing this discrepancy testing method was change into
 
