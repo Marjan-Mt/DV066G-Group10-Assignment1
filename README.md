@@ -8,9 +8,9 @@ Group10_judge.py is the main script to run the tests
 
 ### Observations
 
+The possible countries were put in a list named **prompts** and a dictionary associated with each country capital called **answers**.
 
-
-The test was initially ran according to this prompt to test the models with a static answer:
+The test was initially ran according to this prompt to test the models with a static answer that acted as both the given answer and the expected answer:
 
     >>  def test_judge_accepts_right_capital(self):
         testq = new_country()
@@ -18,7 +18,7 @@ The test was initially ran according to this prompt to test the models with a st
         city = testq[1]
         answer = f"The capital of {country} is {city}."
         print(f"Answer is: The capital of {country} is {city}.")
-        self.assertTrue(llm_as_judge(country,resp,city))
+        self.assertTrue(llm_as_judge(country,answer,city))
 >
 
     >> prompt = (f"Question: What is the capital of {country}?\n"
@@ -39,9 +39,9 @@ Yes to the question of the made up country this was observed once, which gave re
               f"Explain your reasoning with less than 15 words"
               )
 
-Changing the prompt to allow the llm to give its reasoning in short answers results showed: 
+Changing the prompt to allow the llm to give its reasoning in short answers showed: 
 > llama3.2:1b : 
->> Answer is: The capital of Norway is Oslo.  
+>> Expected Answer is: The capital of Norway is Oslo.  
   Judge response: NO. Oslo is not the capital of Norway; Oslo is the capital of Norway's capital city.
 
 However it did seem to reason correctly with the nonsensical land
@@ -52,37 +52,37 @@ However it did seem to reason correctly with the nonsensical land
 Ran 3 additional tests for each model and in 3/3 gemma did not show any faults in the answers and the reasoning was sound
 >gemma3:1b:
 >>test 1  
-Answer is: The capital of Sweden is Stockholm.  
-Judge response: YES. It accurately reflects the expected answer.  
-Judge response: NO.  
+Expected Answer is: The capital of Sweden is Stockholm.  
+Judge "llama3.2:1b" response: YES. It accurately reflects the expected answer.  
+Judge "llama3.2:1b" response: NO.  
 Reasoning: The expected answer explicitly states there’s no country, so “Capacity” isn’t the capital.
 > 
 >>test 2  
-Answer is: The capital of Norway is Oslo.  
-Judge response: YES. It accurately reflects the expected answer.  
-Judge response: NO.  
+Expected Answer is: The capital of Norway is Oslo.  
+Judge "llama3.2:1b" response: YES. It accurately reflects the expected answer.  
+Judge "llama3.2:1b" response: NO.  
 Reasoning: The expected answer explicitly states there is no country, thus there is no capital.
 >
 >>test 3  
-Answer is: The capital of Norway is Oslo.  
-Judge response: YES. The answer matches the expected answer perfectly.  
-Judge response: NO. It disagrees with the expected answer, which states there is no capital.  
+Expected Answer is: The capital of Norway is Oslo.  
+Judge "llama3.2:1b" response: YES. The answer matches the expected answer perfectly.  
+Judge "llama3.2:1b" response: NO. It disagrees with the expected answer, which states there is no capital.  
 
 Llama however failed each of the test when it came to judging the real cities and also gave nonsensical reasoning to 
 answers.
 >llama3.2:1b
 >>test 1  
-Answer is: The capital of Norway is Oslo.  
-Judge response: NO. Oslo is the largest city, not the capital. <-- Hallucination  
-Judge response: NO. The given answer does not agree with the expected answer. MachineLand is not a real country.  
+Expected Answer is: The capital of Norway is Oslo.  
+Judge "llama3.2:1b" response: NO. Oslo is the largest city, not the capital. <-- Hallucination  
+Judge "llama3.2:1b" response: NO. The given answer does not agree with the expected answer. MachineLand is not a real country.  
 >
 >>test 2  
-Answer is: The capital of Sweden is Stockholm.  
-Judge response: NO. The given answer does not agree with the expected answer.  
-Judge response: NO. The given answer is incorrect as MachineLand is a fictional country.  
+Expected Answer is: The capital of Sweden is Stockholm.     
+Judge "llama3.2:1b" response: NO. The given answer does not agree with the expected answer.  
+Judge "llama3.2:1b" response: NO. The given answer is incorrect as MachineLand is a fictional country.  
 >
 >>test 3  
-Answer is: The capital of Sweden is Stockholm.  
+Answer is: The capital of Sweden is Stockholm.  <--- Strict expected answer   
 Judge response: NO  
 Judge response: NO, it does not agree as Capacity is a city, not a country. <- Hallucination
 
@@ -98,47 +98,55 @@ After establishing this discrepancy testing method was change into
         print(f"Answer {resp}?")
         self.assertTrue(llm_as_judge(country,resp,city)) <-- Fed as answer
 
-Gemma3:1b was used to judge llama3.2:1b and at this point the responses were correct, answers ending with ? are llm responses.
+Gemma3:1b was used to judge llama3.2:1b and at this point the responses were correct.
 > Judge gemma3:1b, responder: llama3.2:1b
 >> Test 1:  
->> Answer is: The capital of Norway is Oslo.   
->>Answer The capital of Norway is Oslo.?  
->>Judge response: YES. The answer accurately reflects the expected answer.
+>>Expected Answer is: The capital of Norway is Oslo.    
+>>Answer llama3.2:1b: The capital of Norway is Oslo.?  
+>>Judge "gemma3:1b" response: YES. The answer accurately reflects the expected answer.
 > 
 >> Test 2:   
->> Answer is: The capital of Sweden is Stockholm.  
-Answer The capital of Sweden is Stockholm.?  
-Judge response: YES. It accurately reflects the correct capital city.
+>>Expected Answer is: The capital of Sweden is Stockholm.    
+>>Answer llama3.2:1b: The capital of Sweden is Stockholm.?  
+>>Judge "gemma3:1b" response: YES. It accurately reflects the correct capital city.
 > 
 >> Test 3:   
->> Answer is: The capital of United Kingdom is London.   
-Answer The capital of the United Kingdom is London.?  
-Judge response: YES. It accurately reflects the expected capital city.
+>> Expected Answer is: The capital of United Kingdom is London.       
+>>Answer llama3.2:1b: The capital of the United Kingdom is London.?  
+>>Judge "gemma3:1b" response: YES. It accurately reflects the expected capital city.
 
 Reversing the roles gave immediate faults
 > Judge: llama3.2:1b, responder: gemma3:1b
 >> Test 1:   
->> Answer is: The capital of Sweden is Stockholm.  
->>Answer The capital of Sweden is **Stockholm**. 
+>>Expected Answer is: The capital of Sweden is Stockholm.     
+>>Answer gemma3:1b : The capital of Sweden is **Stockholm**. 
 >>
 >>It’s a wonderful city! 😊 
 >>
 >>Would you like to know more about Stockholm, perhaps about its history, culture, or attractions??   
->>Judge response: No, the given answer does not agree with the expected answer.
+>>Judge "llama3.2:1b" response: No, the given answer does not agree with the expected answer.
 > 
 >> Test 2:  
->> Answer is: The capital of Sweden is Stockholm.   
->>Answer The capital of Sweden is **Stockholm**. 
+>>Expected Answer is: The capital of Sweden is Stockholm.      
+>>Answer gemma3:1b: The capital of Sweden is **Stockholm**. 
 >>
 >>It’s a wonderfully unique city! 😊?  
->>Judge response: NO. The expected answer "Stockholm" is incorrect, as Stockholm is a different city.
+>>Judge "llama3.2:1b" response: NO. The expected answer "Stockholm" is incorrect, as Stockholm is a different city.
 > 
 >> Test 3:   
->>Answer is: The capital of United Kingdom is London.  
-Answer The capital of the United Kingdom is **London**.    
+>>Expected Answer is: The capital of United Kingdom is London.     
+>>Answer gemma3:1b: The capital of the United Kingdom is **London**.    
 >>
 >> While Westminster is the seat of government, London is the center of the country’s political, economic, and cultural life.?  
->> Judge response: NO. The given answer, Westminster, is incorrect.
+>> Judge "llama3.2:1b" response: NO. The given answer, Westminster, is incorrect.
 
-For this part it is reasonable to see these results, as gemma gave longer answers than needed and also added extra trivia which llama
-got hung-up on in addition to using markup language to "exclaim" the capital probably confusing llama.
+At this point llama3.2:1b can safely be assumed to lack the capabilities to act as a judge, as even when given a strict answer that was
+used as both the expected output and the input, llama3.2:1b failed every time.    
+Llama3.2:1b had no problem giving correct answers in the **def test_is_right(self)** method, the problem could be with the prompt from the **llm_as_judge** method, 
+that might have been too complicated for it to comprehend the task it was given. When acting as a judge it exhibited classic hallucination behaviour such as 
+*Judge "llama3.2:1b" response: NO. Oslo is the largest city, not the capital. <-- Hallucination* or,
+*Judge "llama3.2:1b" response: NO, it does not agree as Capacity is a city, not a country. <- Hallucination*.
+and for the last question it missed London in the answer from Gemma3:1b and instead focused on the final sentence that mentioned Westminster instead
+
+
+Gemma3:1b never exhibited any faults on testing, as either judge or answering questions in the **def test_is_right(self)** method

@@ -27,9 +27,14 @@ def llm_as_judge(country,answer,expected):
     print(f"Judge response: {verdict}")
     return verdict.strip().upper().startswith("YES")
 
-
+##Random country
 def new_country():
     country = random.choice(prompts)
+    answer = answers[country]
+    return [country,answer]
+##Controlled country
+def fixed_country():
+    country = prompts[1]
     answer = answers[country]
     return [country,answer]
 
@@ -51,7 +56,7 @@ class JudgeTester(unittest.TestCase):
         print(f"gemma3:1b was correct: {correct} times out of 3")
 
     def test_judge_accepts_right_capital(self):
-        testq = new_country()
+        testq = fixed_country()
         country = testq[0]
         city = testq[1]
         resp = question(country)
