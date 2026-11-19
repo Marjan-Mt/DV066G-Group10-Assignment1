@@ -1,152 +1,266 @@
-# Usage Guide
+# DV066G – Group 10
 
-### Models
-The models used for this are llama3.2:1b and gemma3:1b
+- [Assignment 1: Local LLMs with Ollama](#assignment-1-local-llms-with-ollama)
+- [Assignment 2: Testing `ask_capital`](#assignment-2-testing-ask_capital)
 
-### How to run
-Group10_judge.py is the main script to run the tests
+## Assignment 1: Local LLMs with Ollama
 
-### Observations
+## Purpose
 
-The possible countries were put in a list named **prompts** and a dictionary associated with each country capital called **answers**.
+We ran the same prompts through small open models locally with Ollama and the ollama Python library, saved the answers to CSV and compared speed, correctness and hallucinations.
 
-The test was initially ran according to this prompt to test the models with a static answer that acted as both the given answer and the expected answer:
+## Prompts:
 
-    >>  def test_judge_accepts_right_capital(self):
-        testq = new_country()
-        country = testq[0]
-        city = testq[1]
-        answer = f"The capital of {country} is {city}."
-        print(f"Answer is: The capital of {country} is {city}.")
-        self.assertTrue(llm_as_judge(country,answer,city))
+1. What is the biggest planet in the solar system?
+2. List the eight planets from largest to smallest by diameter.
+3. What is Jupiter’s diameter in km?
+
+## Models
+
+### Karim
+
+- llama3.2:1b
+- gemma3:1b
+
+The test were run on a MSI thin with 16 GB RAM
+
+### Marjan
+
+- `llama3.2:latest`
+- `qwen2.5:1.5b`
+
+The tests were run on a MacBook Air M1 with 8 GB RAM.
+
+### Yasaman
+
+- llama3.2:1b
+- gemma3:1b
+
+The tests were run on a HP ZBook Fury with 32 GB RAM.
+
+## How to run
+
+### Karim
+
+These instructions are for windows, Install ollama from [https://docs.ollama.com/quickstart#local](https://docs.ollama.com/quickstart#local) .
+
+In cmd get the models by typing in ollama pull model, ex ollama pull llama3.2:1b
+
+```bash
+py install ollama
+```
+
+and then call to the script using py prompts.py
+
+### Marjan
+
+These instructions are for macOS.
+
+```bash
+ollama pull llama3.2:latest
+ollama pull qwen2.5:1.5b
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install ollama
+```
+
+Keep `prompts.py` and `LLMcalls.py` together. In `prompts.py`, use the models above and set:
+
+```python
+results_csv = "marjan_planets_results.csv"
+```
+
+```bash
+python prompts.py
+```
+
+### Yasaman
+
+These instructions are for Windows with WSL2 (Ubuntu 24.04). Ollama 0.40.14.
+
+```bash
+sudo apt-get install -y zstd python3-venv
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull llama3.2:1b
+ollama pull gemma3:1b
+python3 -m venv ~/.venvs/dv066g && source ~/.venvs/dv066g/bin/activate
+pip install ollama
+python prompts.py
+```
+
+Output: `results_yasaman.csv` (run 1) and `results_yasaman_run2.csv` (run 2, same prompts about 3 minutes later).
+
+## Results and observations
+
+### Marjan
+
+#### Llama 3.2
+
+Llama correctly answered that Jupiter is the biggest planet. However, it said Jupiter has about 1,475 times Earth's mass. The correct value is about 318 times Earth's mass.
+
+It listed the planets in the correct order:
+
+Jupiter, Saturn, Uranus, Neptune, Earth, Venus, Mars, Mercury.
+
+For Jupiter's diameter, it gave 142,984 km. This is the equatorial diameter, although the answer did not explain which diameter it used.
+
+#### Qwen 2.5
+
+Qwen also correctly named Jupiter as the biggest planet. It gave a diameter of 139,822 km, which is the mean diameter. However, its extra statement about a sphere with a diameter of 39 km did not make sense as an explanation of Jupiter's size.
+
+Its planet order was incorrect. It placed Venus after Mars and Mercury and called Venus the smallest planet. Venus should be between Earth and Mars. Mercury is the smallest.
+
+For the final question, Qwen gave Jupiter's equatorial diameter of 142,984 km. The different diameter values are not necessarily a contradiction, but the model should explain whether it means the average or equatorial diameter.
+
+### Yasaman
+
+I ran the same three prompts twice with both models to see if the answers change between runs.
+
+#### Llama 3.2 (1b)
+
+Llama answered all three questions correctly in both runs and listed the planets in the correct order. The mistakes were in details nobody asked for. In run 1 it said Jupiter is "more than 1,300 times the size of Earth", which is right for volume. In run 2 the same sentence became "1,300 times the diameter of the Earth", which is wrong (about 11 times). It also converted Jupiter's diameter to 87,975 miles in one answer and 88,846 miles in the next (the correct value is 88,846).
+
+#### Gemma 3 (1b)
+
+Gemma also answered the main questions correctly and listed the planets in the correct order, but it hallucinated more in the extra details:
+
+- Run 1: "Jupiter has a mass approximately 318 times that of all the other planets combined". 318 is Jupiter's mass compared to Earth, not to all other planets (about 2.5 times).
+- Run 1: "roughly the size of several thousand Earths". About 1,300 Earths fit inside Jupiter.
+- Run 2: "Jupiter holds roughly 95% of the total mass of the solar system". The Sun holds about 99.8%.
+- Run 2: 142,984 km = "91,000 miles". The correct conversion is 88,846 miles.
+- It made up today's date: "October 26, 2023" in run 1 and "November 2, 2023" in run 2. The model has no clock and guesses a date from its training data.
+
+Both models mixed equatorial and mean diameters in the same list without saying so.
+
+#### Non-determinism
+
+Same prompt, same model, same machine, a few minutes apart, but the details changed. Some errors disappeared and new ones appeared. One run is not enough to judge a model.
+
+### Karim
+
+Both of my models gave correct answers, however gemma always added onto each of the measurement queries that these measurements are approximations and can be reported differently from different sources, whilst llama only did so for 1 out of 4 queries. For these queries I would say they were about the same as what I would expect from ChatGPT.
+
+## Timing and limitations
+
+### Karim
+
+The longest time it took for any query was 3.7 s and the quickest was 0.16 s.
+
+### Marjan
+
+Llama took 7.32 seconds to answer the biggest-planet question, 7.20 seconds to list the planets by diameter, and 0.96 seconds to give Jupiter’s diameter.
+
+Qwen took 3.58, 2.08 and 0.40 seconds for the same questions. Qwen was faster for all three questions in this run.
+
+### Yasaman
+
+Gemma's first request took 52 seconds, most likely because the model had to be loaded into memory (cold start). I ran it right after downloading the model. In run 2 the same question took under 7 seconds. The answer length was similar in both runs so the difference is not explained by length. Gemma also wrote much longer answers than Llama, which takes more time.
+
+## Learning
+
+**LLMs predict tokens, they do not look facts up.**
+
+LLMs are pre-trained by hiding a word and predicting it and GPTs predict the next word. Text is split into numbers. This explains why the models got well-known facts right (Jupiter is the biggest planet) but attached real numbers to the wrong quantity: Llama said "1,475 × Earth's mass" (Marjan's run), and Gemma said "318 × all other planets" (Yasaman's run). It also explains why unit conversions to miles gave different results.
+
+**Hallucinations sound right.**
+
+"Hallucinations can sound right even when they are fundamentally wrong or unverifiable". None of the wrong answers sounded uncertain. We could only find the errors because our prompts had answers we could check against NASA's fact sheet.
+
+**The same prompt gives different answers.**
+
+The model samples each next token and temperature controls how random the choice is. Karim found no errors with llama3.2:1b and gemma3:1b, while Yasaman found several with the same models and prompts. Yasaman's two runs also differed from each other. "Test outputs over many runs": one run is not enough to judge a model.
+
+**Small models can make factual mistakes.**
+
+Qwen 2.5 (1.5B) got the planet order wrong (Marjan's run). Every model got the main question right but errors appeared in harder or extra details.
+
+**We cannot tell where an answer comes from.**
+
+The models do not look up sources when they answer. They generate text from patterns learned from their training data and we do not know exactly what that data contained. This may explain why the models mixed mean and equatorial diameters without saying which one they used. Gemma listed links to NASA and Space.com, it generated them as text and did not read them. As the course slides put it, "some AI models are difficult to understand, making their decisions hard to explain". To trust an answer, we had to check it against a source ourselves.
+
+**Speed depends on more than the model.**
+
+The first request includes loading the model into memory. Longer answers take longer and we used different hardware so times are not directly comparable between members.
+
+**Why this matters for AI engineering.**
+
+If an LLM is used as a software component its output must be tested over many runs and checked against a trusted source because it can be fluent, confident and wrong.
+
+## Sources used to check the answers
+
+NASA Planetary Fact Sheet
+
+W45. Intro to the course and to AI, Beatriz Cabrero-Daniel | 26-11-02
+
+
+## Assignment 2: Testing `ask_capital`
+
+## Purpose
+
+We tested `ask_capital` with Python's `unittest`: a consistency test that asks the same question several times, and LLM-as-a-judge tests where one model checks another model's answer. We used gemma3:1b and llama3.2:1b, both as responder and as judge.
+
+The code is in `Group10_judge.py` and `LLMcalls.py`. Our full test logs and prompt experiments are in [assignment2_test_logs.md](assignment2_test_logs.md).
+
+## How to run
+
+1. Install Ollama (<https://docs.ollama.com/quickstart>) and pull the models:
+   ```bash
+   ollama pull gemma3:1b
+   ollama pull llama3.2:1b
+   ```
+2. Install the Python library in a virtual environment:
+
+   | System | Commands |
+   |---|---|
+   | Windows (cmd) | `py -m venv .venv` → `.venv\Scripts\activate` → `py -m pip install ollama` |
+   | macOS / Linux / WSL | `python3 -m venv .venv` → `source .venv/bin/activate` → `pip install ollama` |
+
+3. Keep `Group10_judge.py` and `LLMcalls.py` in the same folder and run:
+   ```bash
+   python3 Group10_judge.py -v      # Windows: py Group10_judge.py -v
+   ```
+
+## Results from repeated runs (current version of `Group10_judge.py`)
+
+Responder gemma3:1b, judge llama3.2:1b. We ran the full test suite 6 times.
+
+| Run | `test_is_right` (country, correct out of 3) | `test_judge_accepts_right_capital` | `test_judge_rejects_invented_capital` |
+|---|---|---|---|
+| 1 | ok (Sweden, 3/3) | FAIL | ok |
+| 2 | ok (United Kingdom, 3/3) | FAIL | ok |
+| 3 | ok (United Kingdom, 3/3) | FAIL | ok |
+| 4 | ok (Sweden, 3/3) | FAIL | ok |
+| 5 | ok (Norway, 3/3) | FAIL | ok |
+| 6 | ok (Norway, 3/3) | FAIL | ok |
+
+In every run the judge test asked about Norway. gemma3:1b always named the correct capital, but in several answers it added invented details:
+
+> "It's officially known as Oslofjord." (false)
 >
+> "While many people might think of Bergen as the 'capital', Oslo is the official and primary administrative center." (invented)
 
-    >> prompt = (f"Question: What is the capital of {country}?\n"
-              f"Expected answer: {expected}\n"
-              f"Given answer: {answer}\n\n"
-              f"Does the given answer agree with the expected answer? "
-              f"Extra details are fine as long as they do not contradict it. Reply with only YES or NO."
-              )
+llama3.2:1b rejected every answer, with different reasoning each time, for example:
 
-
-Which worked for gemma 3:1b, but when testing llama3.2:1b it would only answer with NO, Occasionally llama3.2:1b would also answer with
-Yes to the question of the made up country this was observed once, which gave reason to have a new prompt to allow for a longer answer:
-
-    >> prompt = (f"Question: What is the capital of {country}?\n"
-              f"Expected answer: {expected}\n"
-              f"Given answer: {answer}\n\n"
-              f"Does the given answer agree with the expected answer? reply with YES or NO."
-              f"Explain your reasoning with less than 15 words"
-              )
-
-Changing the prompt to allow the llm to give its reasoning in short answers showed: 
-> llama3.2:1b : 
->> Expected Answer is: The capital of Norway is Oslo.  
-  Judge response: NO. Oslo is not the capital of Norway; Oslo is the capital of Norway's capital city.
-
-However it did seem to reason correctly with the nonsensical land
-> llama3.2:1b :
->> Judge response: NO. The given answer does not agree with the expected answer, as MachineLand does not exist.
-
-
-Ran 3 additional tests for each model and in 3/3 gemma did not show any faults in the answers and the reasoning was sound
->gemma3:1b:
->>test 1  
-Expected Answer is: The capital of Sweden is Stockholm.  
-Judge "gemma3:1b" response: YES. It accurately reflects the expected answer.  
-Judge "gemma3:1b" response: NO.  
-Reasoning: The expected answer explicitly states there’s no country, so “Capacity” isn’t the capital.
-> 
->>test 2  
-Expected Answer is: The capital of Norway is Oslo.  
-Judge "gemma3:1b" response: YES. It accurately reflects the expected answer.  
-Judge "gemma3:1b" response: NO.  
-Reasoning: The expected answer explicitly states there is no country, thus there is no capital.
+> "NO. The given answer is incorrect as the capital of Norway is not Oslofjord, it is Oslo."
 >
->>test 3  
-Expected Answer is: The capital of Norway is Oslo.  
-Judge "gemma3:1b" response: YES. The answer matches the expected answer perfectly.  
-Judge "gemma3:1b" response: NO. It disagrees with the expected answer, which states there is no capital.  
-
-Llama however failed each of the test when it came to judging the real cities and also gave nonsensical reasoning to 
-answers.
->llama3.2:1b
->>test 1  
-Expected Answer is: The capital of Norway is Oslo.  
-Judge "llama3.2:1b" response: NO. Oslo is the largest city, not the capital. <-- Hallucination  
-Judge "llama3.2:1b" response: NO. The given answer does not agree with the expected answer. MachineLand is not a real country.  
+> "NO. The expected answer is Bergen, not Oslo." (the expected answer was Oslo)
 >
->>test 2  
-Expected Answer is: The capital of Sweden is Stockholm.     
-Judge "llama3.2:1b" response: NO. The given answer does not agree with the expected answer.  
-Judge "llama3.2:1b" response: NO. The given answer is incorrect as MachineLand is a fictional country.  
->
->>test 3  
-Expected Answer is: The capital of Sweden is Stockholm.     
-Judge "llama3.2:1b" response: NO  
-Judge "llama3.2:1b" response: NO, it does not agree as Capacity is a city, not a country. <- Hallucination
+> "NO. The given answer, "Oslo," does not agree with the expected answer, "Oslo."" (run 6, where gemma3:1b only answered "The capital of Norway is **Oslo**.")
 
-After establishing this discrepancy testing method was change into
+## Reflections on testing `ask_capital`
 
-    >>  def test_judge_accepts_right_capital(self):
-        testq = new_country()
-        country = testq[0]
-        city = testq[1]
-        resp = question(country,"llama3.2:1b") <-- LLM response
-        answer = f"The capital of {country} is {city}."
-        print(f"Answer is: The capital of {country} is {city}.")
-        print(f"Answer {resp}?")
-        self.assertTrue(llm_as_judge(country,resp,city)) <-- Fed as answer
+**Do the tests always give the same result?**
 
-Gemma3:1b was used to judge llama3.2:1b and at this point the responses were correct.
-> Judge gemma3:1b, responder: llama3.2:1b
->> Test 1:  
->>Expected Answer is: The capital of Norway is Oslo.    
->>Answer llama3.2:1b: The capital of Norway is Oslo.?  
->>Judge "gemma3:1b" response: YES. The answer accurately reflects the expected answer.
-> 
->> Test 2:   
->>Expected Answer is: The capital of Sweden is Stockholm.    
->>Answer llama3.2:1b: The capital of Sweden is Stockholm.?  
->>Judge "gemma3:1b" response: YES. It accurately reflects the correct capital city.
-> 
->> Test 3:   
->> Expected Answer is: The capital of United Kingdom is London.       
->>Answer llama3.2:1b: The capital of the United Kingdom is London.?  
->>Judge "gemma3:1b" response: YES. It accurately reflects the expected capital city.
+At the level of pass/fail, yes. In our earlier tests with a fixed correct answer (an older version of the code), gemma3:1b as judge said YES 3/3 times and llama3.2:1b said NO 3/3 times. In our 6 runs with the current code, the same tests passed and the same test failed every time. But the text was different every time. gemma3:1b phrased its answers differently and added different extra details, and llama3.2:1b gave different reasons for the same verdict. This is non-determinism: the outcome was stable here, but the words were not. Because `test_is_right` picks a random country, each run also tested a different case, which makes runs harder to compare.
 
-Reversing the roles gave immediate faults
-> Judge: llama3.2:1b, responder: gemma3:1b
->> Test 1:   
->>Expected Answer is: The capital of Sweden is Stockholm.     
->>Answer gemma3:1b : The capital of Sweden is **Stockholm**. 
->>
->>It’s a wonderful city! 😊 
->>
->>Would you like to know more about Stockholm, perhaps about its history, culture, or attractions??   
->>Judge "llama3.2:1b" response: No, the given answer does not agree with the expected answer.
-> 
->> Test 2:  
->>Expected Answer is: The capital of Sweden is Stockholm.      
->>Answer gemma3:1b: The capital of Sweden is **Stockholm**. 
->>
->>It’s a wonderfully unique city! 😊?  
->>Judge "llama3.2:1b" response: NO. The expected answer "Stockholm" is incorrect, as Stockholm is a different city.
-> 
->> Test 3:   
->>Expected Answer is: The capital of United Kingdom is London.     
->>Answer gemma3:1b: The capital of the United Kingdom is **London**.    
->>
->> While Westminster is the seat of government, London is the center of the country’s political, economic, and cultural life.?  
->> Judge "llama3.2:1b" response: NO. The given answer, Westminster, is incorrect.
+We also asked gemma3:1b for the capital of Australia 5 times in a separate run, not part of Group10_judge.py, since Sydney is a common wrong answer. It answered Canberra every time, so even this harder case was not a problem for the model. The mistakes we found came from the judge and from invented extra details, not from the capital itself.
 
-At this point llama3.2:1b can safely be assumed to lack the capabilities to act as a judge, as even when given a strict answer that was
-used as both the expected output and the input, llama3.2:1b failed every time.    
-Llama3.2:1b had no problem giving correct answers in the **def test_is_right(self)** method, the problem could be with the prompt from the **llm_as_judge** method, 
-that might have been too complicated for it to comprehend the task it was given. When acting as a judge it exhibited classic hallucination behaviour such as 
-*Judge "llama3.2:1b" response: NO. Oslo is the largest city, not the capital. <-- Hallucination* or,
-*Judge "llama3.2:1b" response: NO, it does not agree as Capacity is a city, not a country. <- Hallucination*.
-and for the last question it missed London in the answer from Gemma3:1b and instead focused on the final sentence that mentioned Westminster instead
+**Can we tell whether a mistake came from the model or the judge?**
 
+Only if we print both the model's answer and the judge's verdict. When llama3.2:1b judged a fixed, correct answer ("The capital of Norway is Oslo."), no model had answered, so the mistake could only come from the judge. The same was true in run 6 with the current code: gemma3:1b answered only "The capital of Norway is **Oslo**.", and llama3.2:1b still said NO because "Oslo" did not agree with "Oslo". In other runs it was less clear. gemma3:1b named the right capital but added false details such as "officially known as Oslofjord", and llama3.2:1b's NO in that case was partly reacting to a real hallucination. Whether that NO is wrong depends on what the judge is supposed to check: only the capital, or the whole answer. Our prompt no longer says, because we removed the line "Extra details are fine as long as they do not contradict it."
 
-Gemma3:1b never exhibited any faults on testing, as either judge or answering questions in the **def test_is_right(self)** method
+**What we learned**
+- The judge is also an AI component and can make mistakes, so it must be tested on fixed answers where we already know the right verdict.
+- A small model like llama3.2:1b was not reliable enough to be a judge in our tests.
+- A model can give the right answer and still hallucinate in the details. A simple string check ("Oslo" in answer) does not catch this.
+- Three runs are too few to say for sure that a model "knows" a capital.
