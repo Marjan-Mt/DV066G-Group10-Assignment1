@@ -1,0 +1,28 @@
+test_is_right (__main__.JudgeTester.test_is_right) ... ok
+test_judge_accepts_right_capital (__main__.JudgeTester.test_judge_accepts_right_capital) ... FAIL
+test_judge_rejects_invented_capital (__main__.JudgeTester.test_judge_rejects_invented_capital) ... ok
+
+======================================================================
+FAIL: test_judge_accepts_right_capital (__main__.JudgeTester.test_judge_accepts_right_capital)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/yasam/DV066G-Group10-Assignment1/Group10_judge.py", line 69, in test_judge_accepts_right_capital
+    self.assertTrue(llm_as_judge(country,resp,city))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 3 tests in 21.095s
+
+FAILED (failures=1)
+Running test_is_right
+Answer is: The capital of Sweden is Stockholm.
+Question is: What is the capital of Sweden?
+gemma3:1b was correct: 3 times out of 3
+
+Running test_judge_accepts_right_capital
+Exact answer is: The capital of Norway is Oslo.
+Answer from LLM The capital of Norway is **Oslo**. 
+
+It’s officially known as Oslo, but it’s widely referred to as the “capital” of Norway. 😊
+Judge llama3.2:1b's judgement: No, the given answer does not agree with the expected answer.
+Judge llama3.2:1b's judgement: NO. The given answer does not agree with the expected answer, as MachineLand is not a real country.
