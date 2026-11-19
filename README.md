@@ -1,4 +1,9 @@
-# DV066G – Group 10 – Assignment 1
+# DV066G – Group 10
+
+- [Assignment 1: Local LLMs with Ollama](#assignment-1-local-llms-with-ollama)
+- [Assignment 2: Testing `ask_capital`](#assignment-2-testing-ask_capital)
+
+## Assignment 1: Local LLMs with Ollama
 
 ## Purpose
 
@@ -186,3 +191,76 @@ If an LLM is used as a software component its output must be tested over many ru
 NASA Planetary Fact Sheet
 
 W45. Intro to the course and to AI, Beatriz Cabrero-Daniel | 26-11-02
+
+
+## Assignment 2: Testing `ask_capital`
+
+## Purpose
+
+We tested `ask_capital` with Python's `unittest`: a consistency test that asks the same question several times, and LLM-as-a-judge tests where one model checks another model's answer. We used gemma3:1b and llama3.2:1b, both as responder and as judge.
+
+The code is in `Group10_judge.py` and `LLMcalls.py`. Our full test logs and prompt experiments are in [assignment2_test_logs.md](assignment2_test_logs.md).
+
+## How to run
+
+1. Install Ollama (<https://docs.ollama.com/quickstart>) and pull the models:
+   ```bash
+   ollama pull gemma3:1b
+   ollama pull llama3.2:1b
+   ```
+2. Install the Python library in a virtual environment:
+
+   | System | Commands |
+   |---|---|
+   | Windows (cmd) | `py -m venv .venv` → `.venv\Scripts\activate` → `py -m pip install ollama` |
+   | macOS / Linux / WSL | `python3 -m venv .venv` → `source .venv/bin/activate` → `pip install ollama` |
+
+3. Keep `Group10_judge.py` and `LLMcalls.py` in the same folder and run:
+   ```bash
+   python3 Group10_judge.py -v      # Windows: py Group10_judge.py -v
+   ```
+
+## Results from repeated runs (current version of `Group10_judge.py`)
+
+Responder gemma3:1b, judge llama3.2:1b. We ran the full test suite 6 times.
+
+| Run | `test_is_right` (country, correct out of 3) | `test_judge_accepts_right_capital` | `test_judge_rejects_invented_capital` |
+|---|---|---|---|
+| 1 | ok (Sweden, 3/3) | FAIL | ok |
+| 2 | ok (United Kingdom, 3/3) | FAIL | ok |
+| 3 | ok (United Kingdom, 3/3) | FAIL | ok |
+| 4 | ok (Sweden, 3/3) | FAIL | ok |
+| 5 | ok (Norway, 3/3) | FAIL | ok |
+| 6 | ok (Norway, 3/3) | FAIL | ok |
+
+In every run the judge test asked about Norway. gemma3:1b always named the correct capital, but in several answers it added invented details:
+
+> "It's officially known as Oslofjord." (false)
+>
+> "While many people might think of Bergen as the 'capital', Oslo is the official and primary administrative center." (invented)
+
+llama3.2:1b rejected every answer, with different reasoning each time, for example:
+
+> "NO. The given answer is incorrect as the capital of Norway is not Oslofjord, it is Oslo."
+>
+> "NO. The expected answer is Bergen, not Oslo." (the expected answer was Oslo)
+>
+> "NO. The given answer, "Oslo," does not agree with the expected answer, "Oslo."" (run 6, where gemma3:1b only answered "The capital of Norway is **Oslo**.")
+
+## Reflections on testing `ask_capital`
+
+**Do the tests always give the same result?**
+
+At the level of pass/fail, yes. In our earlier tests with a fixed correct answer (an older version of the code), gemma3:1b as judge said YES 3/3 times and llama3.2:1b said NO 3/3 times. In our 6 runs with the current code, the same tests passed and the same test failed every time. But the text was different every time. gemma3:1b phrased its answers differently and added different extra details, and llama3.2:1b gave different reasons for the same verdict. This is non-determinism: the outcome was stable here, but the words were not. Because `test_is_right` picks a random country, each run also tested a different case, which makes runs harder to compare.
+
+We also asked gemma3:1b for the capital of Australia 5 times in a separate run, not part of Group10_judge.py, since Sydney is a common wrong answer. It answered Canberra every time, so even this harder case was not a problem for the model. The mistakes we found came from the judge and from invented extra details, not from the capital itself.
+
+**Can we tell whether a mistake came from the model or the judge?**
+
+Only if we print both the model's answer and the judge's verdict. When llama3.2:1b judged a fixed, correct answer ("The capital of Norway is Oslo."), no model had answered, so the mistake could only come from the judge. The same was true in run 6 with the current code: gemma3:1b answered only "The capital of Norway is **Oslo**.", and llama3.2:1b still said NO because "Oslo" did not agree with "Oslo". In other runs it was less clear. gemma3:1b named the right capital but added false details such as "officially known as Oslofjord", and llama3.2:1b's NO in that case was partly reacting to a real hallucination. Whether that NO is wrong depends on what the judge is supposed to check: only the capital, or the whole answer. Our prompt no longer says, because we removed the line "Extra details are fine as long as they do not contradict it."
+
+**What we learned**
+- The judge is also an AI component and can make mistakes, so it must be tested on fixed answers where we already know the right verdict.
+- A small model like llama3.2:1b was not reliable enough to be a judge in our tests.
+- A model can give the right answer and still hallucinate in the details. A simple string check ("Oslo" in answer) does not catch this.
+- Three runs are too few to say for sure that a model "knows" a capital.
