@@ -1,4 +1,5 @@
 from LLMcalls import chat_ollama
+from ollama import ResponseError
 import unittest
 import random
 
@@ -73,7 +74,23 @@ class JudgeTester(unittest.TestCase):
         answer = f"The capital of MachineLand is Capacity."
         self.assertFalse(llm_as_judge("MachineLand",answer,"There is no such country, so it has no capital."))
 
+    def test_judge_accepts_fixed_correct_answer(self):
+        # Check whether the judge accepts a known correct answer.
+        answer = "The capital of Spain is Madrid."
+        self.assertTrue(llm_as_judge("Spain", answer, "Madrid"))
+    def test_judge_rejects_wrong_capital(self):
+        # Check whether the judge rejects a wrong capital for a real country.
+        answer = "The capital of Spain is Barcelona."
+        self.assertFalse(llm_as_judge("Spain", answer, "Madrid"))
 
+    def test_unknown_model_raises_error(self):
+        # Check whether requesting a missing model raises a 404 error.
+        with self.assertRaises(ResponseError) as error:
+            question("Spain", model="no-such-model")
+
+        self.assertEqual(error.exception.status_code, 404)
+        
+        
 
 if __name__ == '__main__':
     unittest.main()
