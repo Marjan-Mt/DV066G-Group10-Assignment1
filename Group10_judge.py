@@ -10,32 +10,25 @@ answers = {"Norway":"Oslo",
 
 
 
-def question(country,model="gemma3:1b"):
+def question(country,model="qwen2.5:1.5b"):
     prompt = f"What is the capital of {country}?"
     response,elapsed = chat_ollama(model, prompt, verbose=False)
     return response['message']['content']
 
 def llm_as_judge(country,answer,expected):
-    model = "llama3.2:1b"
     prompt = (f"Question: What is the capital of {country}?\n"
               f"Expected answer: {expected}\n"
               f"Given answer: {answer}\n\n"
               f"Does the given answer agree with the expected answer? reply with YES or NO."
               f"Explain your reasoning with less than 15 words"
               )
-    response,elapsed = chat_ollama(model, prompt, verbose=False)
+    response,elapsed = chat_ollama("llama3.2:latest", prompt, verbose=False)
     verdict = response['message']['content']
-    print(f"Judge {model}'s judgement: {verdict}")
+    print(f"Judge response: {verdict}")
     return verdict.strip().upper().startswith("YES")
 
-##Random country
 def new_country():
     country = random.choice(prompts)
-    answer = answers[country]
-    return [country,answer]
-##Controlled country
-def fixed_country():
-    country = prompts[0]
     answer = answers[country]
     return [country,answer]
 
@@ -47,7 +40,6 @@ class JudgeTester(unittest.TestCase):
         testq = new_country()
         country = testq[0]
         city = testq[1]
-        print("Running test_is_right")
         print(f"Answer is: The capital of {country} is {city}.")
         print(f"Question is: What is the capital of {country}?")
         for i in range(3):
@@ -55,17 +47,16 @@ class JudgeTester(unittest.TestCase):
             if city.lower() in answer.lower():
                 correct += 1
         self.assertGreaterEqual(correct, 2)
-        print(f"gemma3:1b was correct: {correct} times out of 3\n")
+        print(f"qwen2.5:1.5b was correct: {correct} times out of 3")
 
     def test_judge_accepts_right_capital(self):
-        print("Running test_judge_accepts_right_capital")
-        testq = fixed_country()
+        testq = new_country()
         country = testq[0]
         city = testq[1]
         resp = question(country)
         answer = f"The capital of {country} is {city}."
-        print(f"Exact answer is: The capital of {country} is {city}.")
-        print(f"Answer from LLM {resp}")
+        print(f"Answer is: The capital of {country} is {city}.")
+        print(f"Answer {resp}?")
         self.assertTrue(llm_as_judge(country,resp,city))
 
 
