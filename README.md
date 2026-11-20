@@ -247,6 +247,20 @@ llama3.2:1b rejected every answer, with different reasoning each time, for examp
 >
 > "NO. The given answer, "Oslo," does not agree with the expected answer, "Oslo."" (run 6, where gemma3:1b only answered "The capital of Norway is **Oslo**.")
 
+### Results of the additional fixed-answer judge tests
+
+The following tests use fixed answers to evaluate the judge separately. The first test gives the judge a known correct answer, while the second gives it a known incorrect answer.
+
+| Run | `test_judge_accepts_fixed_correct_answer` | `test_judge_rejects_wrong_capital` |
+|---|---|---|
+| 1 | — | — |
+| 2 | — | — |
+| 3 | — | — |
+
+These tests were run with `llama3.2:1b` as the judge. The results will show whether the judge consistently accepts the known correct answer and rejects the known incorrect answer.
+
+We also ran the tests with `qwen2.5:1.5b` as the answering model and `llama3.2:latest` as the judge. In our runs, this model combination accepted the correct answers and rejected the incorrect answers. The detailed results are available in [assignment2_test_logs.md](assignment2_test_logs.md).
+
 ## Reflections on testing `ask_capital`
 
 **Do the tests always give the same result?**
