@@ -1,0 +1,40 @@
+test_is_right (__main__.JudgeTester.test_is_right) ... ok
+test_judge_accepts_fixed_correct_answer (__main__.JudgeTester.test_judge_accepts_fixed_correct_answer) ... FAIL
+test_judge_accepts_right_capital (__main__.JudgeTester.test_judge_accepts_right_capital) ... FAIL
+test_judge_rejects_invented_capital (__main__.JudgeTester.test_judge_rejects_invented_capital) ... ok
+test_judge_rejects_wrong_capital (__main__.JudgeTester.test_judge_rejects_wrong_capital) ... ok
+
+======================================================================
+FAIL: test_judge_accepts_fixed_correct_answer (__main__.JudgeTester.test_judge_accepts_fixed_correct_answer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "DV066G-Group10-Assignment1/judge_fixed_tests.py", line 79, in test_judge_accepts_fixed_correct_answer
+    self.assertTrue(llm_as_judge("Spain", answer, "Madrid"))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_judge_accepts_right_capital (__main__.JudgeTester.test_judge_accepts_right_capital)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "DV066G-Group10-Assignment1/judge_fixed_tests.py", line 69, in test_judge_accepts_right_capital
+    self.assertTrue(llm_as_judge(country,resp,city))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 5 tests in 7.879s
+
+FAILED (failures=2)
+Running test_is_right
+Answer is: The capital of Sweden is Stockholm.
+Question is: What is the capital of Sweden?
+gemma3:1b was correct: 3 times out of 3
+
+Judge llama3.2:1b's judgement: NO. The given answer does not agree with the expected answer because the expected answer is Vigo, not Madrid.
+Running test_judge_accepts_right_capital
+Exact answer is: The capital of Norway is Oslo.
+Answer from LLM The capital of Norway is **Oslo**. 
+
+While Stavanger is a significant city, Oslo is the official and primary capital.
+Judge llama3.2:1b's judgement: NO. The given answer does not agree with the expected answer.
+Judge llama3.2:1b's judgement: NO. The given answer does not agree with the expected answer.
+Judge llama3.2:1b's judgement: NO. The answer "Barcelona" is incorrect, as Barcelona is a city in Spain, not the capital.
