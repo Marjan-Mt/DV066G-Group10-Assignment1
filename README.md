@@ -197,7 +197,7 @@ W45. Intro to the course and to AI, Beatriz Cabrero-Daniel | 26-11-02
 
 ## Purpose
 
-We tested `ask_capital` with Python's `unittest`: a consistency test that asks the same question several times, and LLM-as-a-judge tests where one model checks another model's answer. We used gemma3:1b and llama3.2:1b, both as responder and as judge.
+We tested `ask_capital` with Python's `unittest`: a consistency test that asks the same question several times, and LLM-as-a-judge tests where one model checks another model's answer. We used gemma3:1b and llama3.2:1b, both as responder and as judge. In an extra experiment we also used qwen2.5:1.5b as responder and llama3.2:latest as judge.
 
 The code is in `Group10_judge.py` and `LLMcalls.py`. Our full test logs and prompt experiments are in [assignment2_test_logs.md](assignment2_test_logs.md).
 
@@ -220,9 +220,9 @@ The code is in `Group10_judge.py` and `LLMcalls.py`. Our full test logs and prom
    python3 Group10_judge.py -v      # Windows: py Group10_judge.py -v
    ```
 
-## Results from repeated runs (current version of `Group10_judge.py`)
+## Results from repeated runs (first three tests in `Group10_judge.py`)
 
-Responder gemma3:1b, judge llama3.2:1b. We ran the full test suite 6 times.
+Responder gemma3:1b, judge llama3.2:1b. We ran these three tests 6 times.
 
 | Run | `test_is_right` (country, correct out of 3) | `test_judge_accepts_right_capital` | `test_judge_rejects_invented_capital` |
 |---|---|---|---|
@@ -257,7 +257,7 @@ The following tests use fixed answers to evaluate the judge separately. The firs
 | 2 | FAIL | ok |
 | 3 | FAIL | ok |
 
-These tests were run with `llama3.2:1b` as the judge. In all three runs, the judge rejected the known correct answer, "The capital of Spain is Madrid." However, it correctly rejected the known incorrect answer, "The capital of Spain is Barcelona," in all three runs.
+These tests were run with `llama3.2:1b` as the judge. In all three runs, the judge rejected the known correct answer, "The capital of Spain is Madrid." It also rejected the known incorrect answer, “The capital of Spain is Barcelona,” in all three runs. This does not show that the judge works, because llama3.2:1b said NO to every answer. A judge that always says NO passes every test that expects NO.
 
 The judge gave incorrect explanations for the correct answer, including:
 
@@ -288,3 +288,5 @@ Only if we print both the model's answer and the judge's verdict. When llama3.2:
 - A small model like llama3.2:1b was not reliable enough to be a judge in our tests.
 - A model can give the right answer and still hallucinate in the details. A simple string check ("Oslo" in answer) does not catch this.
 - Three runs are too few to say for sure that a model "knows" a capital.
+- A judge must be tested with both correct and wrong answers. A judge that always says NO passes every “reject” test.
+- Changing the models changed the results completely (all tests passed with qwen2.5:1.5b and llama3.2:latest). Test results only hold for the exact models that were tested, so model versions must be recorded.
